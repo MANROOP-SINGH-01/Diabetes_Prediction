@@ -3,254 +3,401 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diabetes Health Risk Predictor | Machine Learning System</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <title>Clinical Risk Engine — Manroop Singh</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #090d16;
-            --surface: rgba(18, 24, 38, 0.7);
-            --border: rgba(255, 255, 255, 0.08);
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --accent: #06b6d4;
-            --accent-glow: rgba(6, 182, 212, 0.3);
-            --accent-purple: #8b5cf6;
+            --bg: #090a0f;
+            --subtle-bg: #0d0f17;
+            --card-bg: #121520;
+            --card-hover: #161a28;
+            --border-color: #1e2333;
+            --border-hover: #2d344d;
+            --text-title: #f8fafc;
+            --text-body: #94a3b8;
+            --text-subtle: #64748b;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --primary-glow: rgba(99, 102, 241, 0.15);
+            --accent-green: #10b981;
+            --accent-green-glow: rgba(16, 185, 129, 0.15);
+            --danger: #f43f5e;
+            --radius-lg: 16px;
+            --radius-md: 10px;
+            --radius-sm: 6px;
+            --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-sans);
+            -webkit-font-smoothing: antialiased;
+        }
         body {
             min-height: 100vh;
-            background: radial-gradient(circle at 50% 0%, #162438 0%, var(--bg) 75%);
-            color: var(--text-main);
-            padding: 32px 16px;
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99, 102, 241, 0.12), transparent),
+                radial-gradient(circle at 100% 100%, rgba(14, 165, 233, 0.05), transparent 40%);
+            color: var(--text-body);
+            line-height: 1.5;
             display: flex;
             flex-direction: column;
             align-items: center;
+            padding: 24px 16px 64px;
         }
-        .container { width: 100%; max-width: 960px; }
-        .nav-back {
-            display: inline-flex; align-items: center; gap: 8px;
-            color: #38bdf8; text-decoration: none; font-size: 0.9rem; font-weight: 500;
-            margin-bottom: 24px; transition: color 0.2s;
-        }
-        .nav-back:hover { color: #7dd3fc; }
-        .hero {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            backdrop-filter: blur(20px);
-            padding: 36px;
-            position: relative;
-            overflow: hidden;
-            margin-bottom: 24px;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
-        }
-        .hero::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-            background: linear-gradient(90deg, var(--accent), var(--accent-purple));
-        }
-        .badge {
-            display: inline-block; padding: 6px 14px; border-radius: 9999px;
-            font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
-            background: rgba(6, 182, 212, 0.15); color: #67e8f9; border: 1px solid rgba(6, 182, 212, 0.3);
-            margin-bottom: 12px;
-        }
-        h1 { font-size: 2.2rem; font-weight: 900; letter-spacing: -0.02em; margin-bottom: 8px; }
-        p.subtitle { color: var(--text-muted); font-size: 1rem; line-height: 1.6; margin-bottom: 24px; }
-        
-        .main-grid {
-            display: grid;
-            grid-template-columns: 1.2fr 0.8fr;
-            gap: 24px;
-        }
-        @media (max-width: 820px) {
-            .main-grid { grid-template-columns: 1fr; }
-        }
-        .card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            backdrop-filter: blur(16px);
-            padding: 28px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-        }
-        h2 { font-size: 1.25rem; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-        @media (max-width: 500px) {
-            .form-grid { grid-template-columns: 1fr; }
-        }
-        .input-group label {
-            display: block; font-size: 0.82rem; font-weight: 600; color: #cbd5e1; margin-bottom: 6px;
-        }
-        .input-group input {
+        .container {
             width: 100%;
-            background: rgba(10, 14, 23, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 10px;
-            padding: 10px 14px;
+            max-width: 980px;
+        }
+        header.top-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 24px;
+            margin-bottom: 32px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .brand-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text-title);
+            font-size: 0.88rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            transition: opacity 0.2s;
+        }
+        .brand-link:hover { opacity: 0.8; }
+        .brand-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1, #06b6d4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             color: #fff;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.95rem;
+            font-size: 0.75rem;
+            font-weight: 800;
+        }
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .nav-btn {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-subtle);
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            border: 1px solid transparent;
             transition: all 0.2s;
         }
-        .input-group input:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2);
+        .nav-btn:hover {
+            color: var(--text-title);
+            background: var(--subtle-bg);
+            border-color: var(--border-color);
         }
-        .quick-presets {
-            display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap;
+        .app-header {
+            margin-bottom: 32px;
         }
-        .preset-btn {
-            background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border);
-            padding: 6px 12px; border-radius: 8px; color: #94a3b8; font-size: 0.78rem; font-weight: 600;
-            cursor: pointer; transition: all 0.2s;
+        .app-category {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--primary);
+            margin-bottom: 8px;
+            font-weight: 600;
         }
-        .preset-btn:hover { background: rgba(255, 255, 255, 0.1); color: #fff; border-color: var(--accent); }
-        .predict-btn {
+        .app-category::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--primary);
+        }
+        h1.app-title {
+            font-size: 2.1rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: var(--text-title);
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+        p.app-summary {
+            font-size: 0.98rem;
+            color: var(--text-body);
+            max-width: 680px;
+            line-height: 1.6;
+        }
+        .panel {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.3);
+            transition: border-color 0.2s;
+        }
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .panel-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-title);
+            letter-spacing: -0.01em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .panel-badge {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--text-subtle);
+            background: var(--subtle-bg);
+            padding: 3px 8px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+        }
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: var(--radius-md);
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px var(--primary-glow);
+        }
+        .btn-secondary {
+            background: var(--subtle-bg);
+            color: var(--text-title);
+            border: 1px solid var(--border-color);
+            padding: 10px 18px;
+            border-radius: var(--radius-md);
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        .btn-secondary:hover {
+            background: var(--card-hover);
+            border-color: var(--border-hover);
+        }
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.78rem;
+            border-radius: var(--radius-sm);
+        }
+        .input-text, select, textarea {
             width: 100%;
-            background: linear-gradient(135deg, #06b6d4, #3b82f6);
-            color: white; border: none; padding: 14px; border-radius: 12px;
-            font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.2s;
-            box-shadow: 0 10px 25px -5px rgba(6, 182, 212, 0.4);
+            background: #08090e;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 10px 14px;
+            color: var(--text-title);
+            font-size: 0.9rem;
+            font-family: var(--font-sans);
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
         }
-        .predict-btn:hover { transform: translateY(-2px); box-shadow: 0 15px 30px -5px rgba(6, 182, 212, 0.6); }
-        
-        .result-box {
-            margin-top: 24px; padding: 20px; border-radius: 14px;
-            display: none; transition: all 0.3s;
+        .input-text:focus, select:focus, textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
         }
-        .result-box.positive {
-            background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5;
+        .input-label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-title);
+            margin-bottom: 6px;
         }
-        .result-box.negative {
-            background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); color: #86efac;
+        .footer {
+            margin-top: 48px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.82rem;
+            color: var(--text-subtle);
         }
-        .result-box h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 4px; }
-        .result-box p { font-size: 0.88rem; line-height: 1.5; color: #e2e8f0; }
-
-        .metric-row {
-            display: flex; justify-content: space-between; padding: 12px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06); font-size: 0.88rem;
+        .footer a {
+            color: var(--text-body);
+            text-decoration: none;
+            transition: color 0.2s;
         }
-        .metric-row:last-child { border-bottom: none; }
-        .metric-label { color: var(--text-muted); }
-        .metric-val { font-family: 'JetBrains Mono', monospace; font-weight: 600; color: #f1f5f9; }
-        footer { margin-top: 40px; text-align: center; font-size: 0.85rem; color: #64748b; }
-        footer a { color: #38bdf8; text-decoration: none; }
+        .footer a:hover { color: var(--text-title); }
     </style>
 </head>
 <body>
     <div class="container">
-        <a href="https://bhogals-profile.vercel.app/" class="nav-back">← Return to Manroop's Portfolio</a>
+        <header class="top-nav">
+            <a href="https://bhogals-profile.vercel.app/" class="brand-link">
+                <div class="brand-avatar">M</div>
+                <span>Manroop Singh Portfolio</span>
+            </a>
+            <div class="nav-actions">
+                <a href="https://github.com/MANROOP-SINGH-01" target="_blank" class="nav-btn">GitHub</a>
+                <a href="https://bhogals-profile.vercel.app/" class="nav-btn">All Projects</a>
+            </div>
+        </header>
 
-        <div class="hero">
-            <div class="badge">Live Clinical Machine Learning</div>
-            <h1>Diabetes Risk Prediction System</h1>
-            <p class="subtitle">
-                Enter clinical patient metrics to test live diagnostic inference powered by an integrated Support Vector Machine (SVM) classifier trained on the Pima Indians Diabetes dataset.
+        <div class="app-header">
+            <div class="app-category">Clinical Machine Learning • Linear SVM</div>
+            <h1 class="app-title">Diabetes Health Risk Predictor</h1>
+            <p class="app-summary">
+                Direct client-side evaluation of Support Vector Machine (SVC) diagnostic model trained on standardized clinical records from the Pima Indian health cohort.
             </p>
-            <div class="quick-presets">
-                <span style="font-size: 0.8rem; color: #64748b; align-self: center;">Test Presets:</span>
-                <button class="preset-btn" onclick="applyPreset(1, 85, 66, 29, 0, 26.6, 0.351, 31)">Normal Patient</button>
-                <button class="preset-btn" onclick="applyPreset(8, 183, 64, 0, 0, 23.3, 0.672, 32)">High Glucose Patient</button>
-                <button class="preset-btn" onclick="applyPreset(5, 166, 72, 19, 175, 25.8, 0.587, 51)">Diabetic Case</button>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 24px;">
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">Clinical Biometric Inputs</span>
+                    <span class="panel-badge">8 Parameters</span>
+                </div>
+
+                <div style="display: flex; gap: 8px; margin-bottom: 20px;">
+                    <button class="btn-secondary btn-sm" onclick="setPreset(1, 85, 66, 29, 0, 26.6, 0.351, 31)">Normal Profile</button>
+                    <button class="btn-secondary btn-sm" onclick="setPreset(5, 166, 72, 19, 175, 25.8, 0.587, 51)">Diabetic Case</button>
+                    <button class="btn-secondary btn-sm" onclick="setPreset(8, 183, 64, 0, 0, 23.3, 0.672, 32)">High Glucose</button>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px;">
+                    <div>
+                        <label class="input-label">Pregnancies</label>
+                        <input type="number" id="p_preg" class="input-text" value="6" min="0">
+                    </div>
+                    <div>
+                        <label class="input-label">Glucose (mg/dL)</label>
+                        <input type="number" id="p_glu" class="input-text" value="148">
+                    </div>
+                    <div>
+                        <label class="input-label">Blood Pressure (mm Hg)</label>
+                        <input type="number" id="p_bp" class="input-text" value="72">
+                    </div>
+                    <div>
+                        <label class="input-label">Skin Thickness (mm)</label>
+                        <input type="number" id="p_skin" class="input-text" value="35">
+                    </div>
+                    <div>
+                        <label class="input-label">Insulin (IU/mL)</label>
+                        <input type="number" id="p_ins" class="input-text" value="0">
+                    </div>
+                    <div>
+                        <label class="input-label">BMI (kg/m²)</label>
+                        <input type="number" id="p_bmi" class="input-text" value="33.6" step="0.1">
+                    </div>
+                    <div>
+                        <label class="input-label">Pedigree Function</label>
+                        <input type="number" id="p_dpf" class="input-text" value="0.627" step="0.001">
+                    </div>
+                    <div>
+                        <label class="input-label">Age (Years)</label>
+                        <input type="number" id="p_age" class="input-text" value="50">
+                    </div>
+                </div>
+
+                <button class="btn-primary" style="width: 100%;" onclick="computeRisk()">
+                    Evaluate Diagnostic Risk
+                </button>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 24px;">
+                <div class="panel">
+                    <div class="panel-header">
+                        <span class="panel-title">Diagnostic Assessment</span>
+                        <span id="riskBadge" class="panel-badge" style="background: rgba(244, 63, 94, 0.15); color: #f43f5e; border-color: rgba(244, 63, 94, 0.3);">ELEVATED RISK</span>
+                    </div>
+
+                    <div style="margin-bottom: 16px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 8px;">
+                            <span>Classification Confidence</span>
+                            <span id="scoreVal" style="font-family: var(--font-mono); font-weight: 600; color: var(--text-title);">+0.84</span>
+                        </div>
+                        <div style="width: 100%; height: 8px; background: #08090e; border-radius: 4px; overflow: hidden; border: 1px solid var(--border-color);">
+                            <div id="scoreBar" style="width: 72%; height: 100%; background: #f43f5e; transition: width 0.3s, background 0.3s;"></div>
+                        </div>
+                    </div>
+
+                    <p id="riskDesc" style="font-size: 0.88rem; line-height: 1.6; color: var(--text-body);">
+                        Patient exhibits elevated blood glucose levels and high BMI index relative to the trained decision boundary.
+                    </p>
+                </div>
+
+                <div class="panel" style="flex: 1;">
+                    <div class="panel-header">
+                        <span class="panel-title">Model Specifications</span>
+                        <span class="panel-badge">Linear SVM</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 10px; font-size: 0.82rem;">
+                        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 6px;">
+                            <span style="color: var(--text-subtle);">Algorithm</span>
+                            <span style="color: var(--text-title); font-weight: 600;">Scikit-Learn SVC</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 6px;">
+                            <span style="color: var(--text-subtle);">Primary Predictor</span>
+                            <span style="color: var(--text-title); font-weight: 600;">Glucose (+1.01)</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 6px;">
+                            <span style="color: var(--text-subtle);">Secondary Predictor</span>
+                            <span style="color: var(--text-title); font-weight: 600;">BMI (+0.62)</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: var(--text-subtle);">Inference Latency</span>
+                            <span style="color: var(--accent-green); font-family: var(--font-mono);">&lt; 1ms (Client)</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="main-grid">
-            <div class="card">
-                <h2><span>🩺</span> Patient Clinical Profile</h2>
-                <div class="form-grid">
-                    <div class="input-group">
-                        <label>Pregnancies</label>
-                        <input type="number" id="p_preg" value="6" step="1" min="0">
-                    </div>
-                    <div class="input-group">
-                        <label>Glucose (mg/dL)</label>
-                        <input type="number" id="p_glu" value="148" step="1">
-                    </div>
-                    <div class="input-group">
-                        <label>Blood Pressure (mm Hg)</label>
-                        <input type="number" id="p_bp" value="72" step="1">
-                    </div>
-                    <div class="input-group">
-                        <label>Skin Thickness (mm)</label>
-                        <input type="number" id="p_skin" value="35" step="1">
-                    </div>
-                    <div class="input-group">
-                        <label>Insulin (IU/mL)</label>
-                        <input type="number" id="p_ins" value="0" step="1">
-                    </div>
-                    <div class="input-group">
-                        <label>BMI (kg/m²)</label>
-                        <input type="number" id="p_bmi" value="33.6" step="0.1">
-                    </div>
-                    <div class="input-group">
-                        <label>Diabetes Pedigree Function</label>
-                        <input type="number" id="p_dpf" value="0.627" step="0.001">
-                    </div>
-                    <div class="input-group">
-                        <label>Age (Years)</label>
-                        <input type="number" id="p_age" value="50" step="1">
-                    </div>
-                </div>
-
-                <button class="predict-btn" onclick="runDiagnosis()">Run Live Model Inference</button>
-
-                <div id="resultBox" class="result-box">
-                    <h3 id="resultTitle">Diagnostic Result</h3>
-                    <p id="resultDesc">Analyzing risk score...</p>
-                </div>
-            </div>
-
-            <div class="card">
-                <h2><span>⚡</span> Architecture & Weights</h2>
-                <div class="metric-row">
-                    <span class="metric-label">Model Architecture</span>
-                    <span class="metric-val">Linear SVM (Scikit-Learn)</span>
-                </div>
-                <div class="metric-row">
-                    <span class="metric-label">Inference Mode</span>
-                    <span class="metric-val">Zero-latency Client Sandbox</span>
-                </div>
-                <div class="metric-row">
-                    <span class="metric-label">Primary Metric Weights</span>
-                    <span class="metric-val">Glucose (+1.01), BMI (+0.62)</span>
-                </div>
-                <div class="metric-row">
-                    <span class="metric-label">Trained Dataset</span>
-                    <span class="metric-val">768 Samples (8 Features)</span>
-                </div>
-                <div class="metric-row">
-                    <span class="metric-label">Decision Boundary Offset</span>
-                    <span class="metric-val">-0.7382</span>
-                </div>
-
-                <div style="margin-top: 24px; padding: 14px; background: rgba(0,0,0,0.3); border-radius: 12px; font-size: 0.8rem; color: #94a3b8; line-height: 1.5;">
-                    💡 <strong>Direct Mathematical Invariant:</strong> The live inference evaluates the exact hyper-plane boundary equation: 
-                    <code>f(X) = W·X + b</code> using the model weights serialized from <code>trained_model.sav</code>.
-                </div>
-            </div>
-        </div>
-
-        <footer>
-            Deployed & Hosted on Vercel • Part of <a href="https://bhogals-profile.vercel.app/">Manroop Singh's Engineering Portfolio</a>
+        <footer class="footer">
+            <span>Built by Manroop Singh • Deployed on Vercel</span>
+            <a href="https://github.com/MANROOP-SINGH-01/Deploying_Machine_Learning_Model" target="_blank">View Source Code →</a>
         </footer>
     </div>
 
     <script>
-        // Trained model parameters from scikit-learn SVC
         const coefs = [0.3069273, 1.0099457, -0.2114678, 0.0003657, -0.1675468, 0.6165827, 0.2551605, 0.0738896];
         const intercept = -0.73820656;
         const means = [3.845, 120.894, 69.105, 20.536, 79.799, 31.992, 0.4718, 33.24];
         const stds = [3.37, 31.97, 19.35, 15.95, 115.24, 7.88, 0.331, 11.76];
 
-        function applyPreset(preg, glu, bp, skin, ins, bmi, dpf, age) {
+        function setPreset(preg, glu, bp, skin, ins, bmi, dpf, age) {
             document.getElementById('p_preg').value = preg;
             document.getElementById('p_glu').value = glu;
             document.getElementById('p_bp').value = bp;
@@ -259,10 +406,10 @@
             document.getElementById('p_bmi').value = bmi;
             document.getElementById('p_dpf').value = dpf;
             document.getElementById('p_age').value = age;
-            runDiagnosis();
+            computeRisk();
         }
 
-        function runDiagnosis() {
+        function computeRisk() {
             const raw = [
                 parseFloat(document.getElementById('p_preg').value) || 0,
                 parseFloat(document.getElementById('p_glu').value) || 0,
@@ -274,31 +421,37 @@
                 parseFloat(document.getElementById('p_age').value) || 0
             ];
 
-            // Standardize features
             let score = intercept;
             for (let i = 0; i < 8; i++) {
-                const z = (raw[i] - means[i]) / stds[i];
-                score += coefs[i] * z;
+                score += coefs[i] * ((raw[i] - means[i]) / stds[i]);
             }
 
-            const box = document.getElementById('resultBox');
-            const title = document.getElementById('resultTitle');
-            const desc = document.getElementById('resultDesc');
-            box.style.display = 'block';
+            const badge = document.getElementById('riskBadge');
+            const scoreVal = document.getElementById('scoreVal');
+            const scoreBar = document.getElementById('scoreBar');
+            const desc = document.getElementById('riskDesc');
+
+            scoreVal.textContent = (score > 0 ? '+' : '') + score.toFixed(2);
 
             if (score > 0) {
-                box.className = 'result-box positive';
-                title.textContent = '⚠️ Elevated Risk — Likely Diabetic';
-                desc.textContent = `Model Decision Score: +${score.toFixed(3)}. Patient exhibits elevated glucose/BMI predictors above the classification threshold. Clinical follow-up recommended.`;
+                badge.style.background = 'rgba(244, 63, 94, 0.15)';
+                badge.style.color = '#f43f5e';
+                badge.style.borderColor = 'rgba(244, 63, 94, 0.3)';
+                badge.textContent = 'ELEVATED RISK';
+                scoreBar.style.background = '#f43f5e';
+                scoreBar.style.width = Math.min(100, Math.max(15, (score + 2) * 25)) + '%';
+                desc.textContent = 'Patient metrics cross the hyper-plane threshold. Elevated glucose or BMI are primary statistical drivers.';
             } else {
-                box.className = 'result-box negative';
-                title.textContent = '✅ Normal Risk — Non-Diabetic';
-                desc.textContent = `Model Decision Score: ${score.toFixed(3)}. Patient metrics fall well within healthy statistical clusters.`;
+                badge.style.background = 'rgba(16, 185, 129, 0.15)';
+                badge.style.color = '#10b981';
+                badge.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+                badge.textContent = 'NORMAL PROFILE';
+                scoreBar.style.background = '#10b981';
+                scoreBar.style.width = Math.min(100, Math.max(15, (1 - Math.abs(score)/2) * 50)) + '%';
+                desc.textContent = 'Patient metrics remain comfortably on the non-diabetic side of the decision boundary.';
             }
         }
-
-        // Run initial diagnosis
-        runDiagnosis();
+        window.onload = computeRisk;
     </script>
 </body>
 </html>
